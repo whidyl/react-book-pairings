@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { prettyDOM, render, screen, waitFor, within } from '@testing-library/react';
 import App from './App';
 import BookList from './components/BookList.js'
 import fetchMock from 'jest-fetch-mock';
@@ -12,22 +12,26 @@ describe('BookList', () => {
     fetch.resetMocks();
   });
 
-  it('Fetches a book', async () => {
+  it('Renders a book from fetch', async () => {
     fetch.mockResponse(JSON.stringify({
       items: [
         {
           id: 1,
-          volumeInfo: {title: "Test Book"}
+          volumeInfo: {title: "Test Book", imageLinks:{smallThumbnail: "test.jpg"}}
         }
       ]
     }));
   
     render(<BookList />);
 
+    let book;
     await waitFor(() => {
-      const book = screen.getByTestId("book-1");
-      expect(book).toBeInTheDocument();
+      book = screen.getByTestId("book-1");
     })
+
+    expect(book).toBeInTheDocument();
+    expect(within(book).getByText("Test Book")).toBeInTheDocument();
+    expect(within(book).getByRole("img")).toBeInTheDocument();
   })
 
   describe('Book', () => {
@@ -38,5 +42,18 @@ describe('BookList', () => {
 
       expect(img).toBeInTheDocument();
     })
+
+    // it('Shows pairings menu on click', async () => {
+    //   render(<Book title="Test Book" thumbnailSrc="test.jpg" id="1"/>);
+
+    //   const book = screen.getByTestId("book-1");
+    //   book.click();
+    //   let pairingsMenu;
+    //   await waitFor(() => {
+    //     pairingsMenu = screen.getByTestId("pairings-menu");
+    //   })
+
+    //   expect(pairingsMenu).toBeInTheDocument();
+    // })
   })
 })
