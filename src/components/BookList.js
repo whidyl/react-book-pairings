@@ -6,7 +6,7 @@ const API_KEY = "AIzaSyAXWya3wtbcU8PkfNwB4499fEj3x87UE_0";
 const makeGoogleApiUrl = (query, maxResults) => `
     https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=${maxResults}&key=${API_KEY}`;
 
-function BookList({ selectBook }) {
+function BookList({ selectBook, bookQuery, queryDelay=0 }) {
   const [books, setBooks] = useState(null);
 
   function setBooksFromGBItems(items) {
@@ -24,17 +24,22 @@ function BookList({ selectBook }) {
 
   useEffect(() => {
     async function fetchBookList() {
-      await fetch(makeGoogleApiUrl("dune", 10))
+      await fetch(makeGoogleApiUrl(bookQuery, 10))
         .then((res) => {
           return res.json();
         })
         .then((res) => {
+          console.log(res);
           setBooksFromGBItems(res);
         });
     }
+    
+    const delayDebounceFn = setTimeout(() => {
+        fetchBookList();
+    }, queryDelay);
 
-    fetchBookList();
-  }, []);
+    return () => clearTimeout(delayDebounceFn);
+  }, [bookQuery]);
 
   return <ul>{books}</ul>;
 }

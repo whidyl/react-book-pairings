@@ -7,10 +7,13 @@ export class Book {
 }
 
 export function makeBookFromGBApiItem(item) {
+  const thumbnailSrc = item.volumeInfo.imageLinks.smallThumbnail /*item.volumeInfo.imageLinks
+    ? item.volumeInfo.imageLinks.smallThumbnail
+    : null;*/
   return new Book(
     item.volumeInfo.title,
     item.id,
-    item.volumeInfo.imageLinks.smallThumbnail
+    thumbnailSrc
   );
 }
 

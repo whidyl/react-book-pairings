@@ -1,12 +1,14 @@
-import { prettyDOM, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, prettyDOM, render, screen, waitFor, within } from '@testing-library/react';
 import App from './App';
 import BookList from './components/BookList.js'
 import fetchMock from 'jest-fetch-mock';
-import { GOOGLE_BOOKS_SINGLE_TEST_BOOK } from './test/mocks.js'
+import { GOOGLE_BOOKS_SINGLE_TEST_BOOK, GOOGLE_BOOKS_TWO_TEST_BOOKS } from './test/mocks.js'
 import BookCard, { Book } from './components/BookCard';
 import { act } from 'react-dom/test-utils';
+import { useReducer } from 'react';
 
 fetchMock.enableMocks();
+jest.useFakeTimers();
 
 describe('App', () => {
   describe('Single test book fetched', () => {
@@ -22,6 +24,7 @@ describe('App', () => {
       await waitFor(() => {
         book = screen.getByTestId("book-1");
       })
+      
     }
   
     it('Renders pairings menu with book data after book is clicked, then closes when close is clicked.', async () => {
@@ -54,8 +57,21 @@ describe('App', () => {
       
       expect(pairingsMenu).toBeNull();
     })
+  })
+  it('Renders search bar, refetches after input not changed for 1 second.', async () => {
+    fetch.resetMocks();
+    fetch.mockResponse(GOOGLE_BOOKS_SINGLE_TEST_BOOK);
+    render(<App />);
+    fetch.mockResponse(GOOGLE_BOOKS_TWO_TEST_BOOKS);
 
-
+    expect(screen.queryByTestId("book-2")).toBeNull();
+    const searchBar = screen.getByTestId('book-search-input');
+    fireEvent.change(searchBar, {target: {value: 'foo'}});
+    
+    expect(searchBar.value).toBe('foo');
+    await waitFor(() => {
+      screen.getByTestId("book-2");
+    })
   })
 })
 
@@ -76,6 +92,12 @@ describe('BookList', () => {
     expect(book).toBeInTheDocument();
     expect(within(book).getByText("Test Book")).toBeInTheDocument();
     expect(within(book).getByRole("img")).toBeInTheDocument();
+  })
+
+  it('Renders a book with no thumbnail, uses filler thumbnail instead', async () => {
+    //TODO
+    fetch.mockResponse(GOOGLE_BOOKS_SINGLE_TEST_BOOK);
+    
   })
 
   describe('Book', () => {
