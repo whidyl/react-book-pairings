@@ -4,6 +4,7 @@ import BookList from './components/BookList.js'
 import fetchMock from 'jest-fetch-mock';
 import { GOOGLE_BOOKS_SINGLE_TEST_BOOK } from './test/mocks.js'
 import BookCard, { Book } from './components/BookCard';
+import { act } from 'react-dom/test-utils';
 
 fetchMock.enableMocks();
 
@@ -23,34 +24,32 @@ describe('App', () => {
       })
     }
   
-    it('Renders pairings menu with book data after book is clicked', async () => {
+    it('Renders pairings menu with book data after book is clicked, then closes when close is clicked.', async () => {
       await setup();
-      
-      book.click();
       let pairingsMenu;
+      
+      act(() => {book.click();});
       await waitFor(() => {
         pairingsMenu = screen.getByTestId("pairings-menu");
       })
 
       expect(pairingsMenu).toBeInTheDocument();
       expect(within(pairingsMenu).getByText("Test Book")).toBeInTheDocument();
-    })
-
-    // it('Closes pairings menu when close button clicked', async () => {
-    //   await setup();
+      expect(screen.getByTestId("selected-book-img")).toBeInTheDocument();
       
-    //   book.click();
-    //   let pairingsMenu;
-    //   await waitFor(() => {
-    //     pairingsMenu = screen.getByTestId("pairings-menu");
-    //   })
-    //   within(pairingsMenu).getByTestId("close-pairings-menu");
-    // })
+      let closeBtn;
 
+      closeBtn = screen.getByTestId("close-pairings-button")
+      act(() => {closeBtn.click()});
+
+      await waitFor(() => {
+        expect(screen.queryByTestId("pairings-menu")).toBeNull();
+      })
+    })
 
     it('Does not render pairings menu before book is clicked', async () => {
       await setup();
-      
+
       const pairingsMenu = screen.queryByTestId("pairings-menu");
       
       expect(pairingsMenu).toBeNull();

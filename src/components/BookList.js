@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import BookCard, { Book, makeBookFromGBApiItem } from "./BookCard";
+import BookCard, { makeBookFromGBApiItem } from "./BookCard";
 
 const API_KEY = "AIzaSyAXWya3wtbcU8PkfNwB4499fEj3x87UE_0";
 
@@ -9,9 +9,9 @@ const makeGoogleApiUrl = (query, maxResults) => `
 function BookList({ selectBook }) {
   const [books, setBooks] = useState(null);
 
-  function setBooksFromRes(res) {
+  function setBooksFromGBItems(items) {
     setBooks(
-      res.items.map((item) => (
+      items.items.map((item) => (
         <li key={item.id}>
           <BookCard
             book={makeBookFromGBApiItem(item)}
@@ -29,7 +29,7 @@ function BookList({ selectBook }) {
           return res.json();
         })
         .then((res) => {
-          setBooksFromRes(res);
+          setBooksFromGBItems(res);
         });
     }
 

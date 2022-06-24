@@ -9,7 +9,7 @@ function App() {
   
   return (
     <div className="App">
-      {selectedBook ? <PairingsMenu book={selectedBook}/> : <></>}
+      {selectedBook ? <PairingsMenu book={selectedBook} close={() => {selectBook(null)}}/> : <></>}
       <BookList selectBook={selectBook}/>
     </div>
   );
