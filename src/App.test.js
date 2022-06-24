@@ -3,7 +3,7 @@ import App from './App';
 import BookList from './components/BookList.js'
 import fetchMock from 'jest-fetch-mock';
 import { GOOGLE_BOOKS_SINGLE_TEST_BOOK } from './test/mocks.js'
-import Book from './components/Book';
+import BookCard, { Book } from './components/BookCard';
 
 fetchMock.enableMocks();
 
@@ -23,7 +23,7 @@ describe('App', () => {
       })
     }
   
-    it('Renders pairings menu after book is clicked', async () => {
+    it('Renders pairings menu with book data after book is clicked', async () => {
       await setup();
       
       book.click();
@@ -31,9 +31,22 @@ describe('App', () => {
       await waitFor(() => {
         pairingsMenu = screen.getByTestId("pairings-menu");
       })
-  
+
       expect(pairingsMenu).toBeInTheDocument();
+      expect(within(pairingsMenu).getByText("Test Book")).toBeInTheDocument();
     })
+
+    // it('Closes pairings menu when close button clicked', async () => {
+    //   await setup();
+      
+    //   book.click();
+    //   let pairingsMenu;
+    //   await waitFor(() => {
+    //     pairingsMenu = screen.getByTestId("pairings-menu");
+    //   })
+    //   within(pairingsMenu).getByTestId("close-pairings-menu");
+    // })
+
 
     it('Does not render pairings menu before book is clicked', async () => {
       await setup();
@@ -42,6 +55,8 @@ describe('App', () => {
       
       expect(pairingsMenu).toBeNull();
     })
+
+
   })
 })
 
@@ -66,7 +81,7 @@ describe('BookList', () => {
 
   describe('Book', () => {
     it('Shows image', () => {
-      render(<Book title="Test Book" thumbnailSrc="test.jpg" id="1"/>);
+      render(<BookCard book={new Book("Test Book", 1, "test.jpg")}/>);
 
       const img = within(screen.getByTestId("book-1")).getByRole("img");
 

@@ -5,11 +5,12 @@ import BookList from './components/BookList';
 import PairingsMenu from './components/PairingsMenu';
 
 function App() {
-  const [isPairingsShown, setIsPairingsShown] = useState(false);
+  const [selectedBook, selectBook] = useState(null);
+  
   return (
     <div className="App">
-      <BookList openPairings={() => {setIsPairingsShown(true)}}/>
-      {isPairingsShown ? <PairingsMenu /> : <></>}
+      {selectedBook ? <PairingsMenu book={selectedBook}/> : <></>}
+      <BookList selectBook={selectBook}/>
     </div>
   );
 }
