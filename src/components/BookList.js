@@ -6,7 +6,7 @@ const API_KEY = "AIzaSyAXWya3wtbcU8PkfNwB4499fEj3x87UE_0";
 const makeGoogleApiUrl = (query, maxResults) => `
     https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=${maxResults}&key=${API_KEY}`;
 
-function BookList() {
+function BookList({openPairings}) {
   const [books, setBooks] = useState(null);
 
   function setBooksFromRes(res) {
@@ -14,6 +14,7 @@ function BookList() {
       res.items.map((bookObj) => (
         <li key={bookObj.id}>
           <Book
+            openPairings={openPairings}
             title={bookObj.volumeInfo.title}
             id={bookObj.id}
             key={bookObj.id}
@@ -27,7 +28,7 @@ function BookList() {
   useEffect(() => {
     async function fetchBookList() {
       await fetch(makeGoogleApiUrl("dune", 10))
-        .then((res) => res.json())
+        .then((res) =>{return res.json();})
         .then((res) => {
           setBooksFromRes(res);
         });
